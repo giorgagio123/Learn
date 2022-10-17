@@ -46,10 +46,12 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
                 parallelMultiplierDuration = stopwatch.ElapsedMilliseconds;
 
                 sizeOfMatrix++;
+
+                Console.WriteLine($"regularMultiplier is Optimal with size {sizeOfMatrix}");
             }
             while (regularMultiplierDuration < parallelMultiplierDuration);
 
-            Console.WriteLine(sizeOfMatrix);
+            Console.WriteLine($"parallelMultiplier is Optimal with size {sizeOfMatrix}");
         }
 
         #region private methods

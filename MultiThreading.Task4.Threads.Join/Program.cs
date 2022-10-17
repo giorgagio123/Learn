@@ -9,6 +9,7 @@
  * - b) ThreadPool class for this task and Semaphore for waiting threads.
  */
 
+using MultiThreading.Task4.Threads.Join.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,6 +18,8 @@ namespace MultiThreading.Task4.Threads.Join
 {
     class Program
     {
+        private static readonly ICreateThreadService _createThreadService = new CreateThreadService();
+        private static readonly ICreateThreadService _createThreadFromThreadPoolService = new CreateThreadFromThreadPoolService();
         static void Main(string[] args)
         {
             Console.WriteLine("4.	Write a program which recursively creates 10 threads.");
@@ -28,33 +31,11 @@ namespace MultiThreading.Task4.Threads.Join
 
             Console.WriteLine();
             // feel free to add your code
-            var semaphoreObject = new Semaphore(initialCount: 1, maximumCount: 1, name: "CreateThreadsThreadPool");
-            CreateThreads(10);
+            _createThreadService.CreateThreads(10, DecrementState);
             Console.WriteLine("ThreadPool");
-            CreateThreadsThreadPool(10, semaphoreObject);
+
+            _createThreadFromThreadPoolService.CreateThreads(10, DecrementState);
             Console.ReadLine();
-        }
-
-        static void CreateThreads(int count) 
-        {
-            if (count != 0) 
-            {
-                var dec = new Thread(() => DecrementState(count));
-                dec.Start();
-                dec.Join();
-                CreateThreads(count -1);
-            }
-        }
-
-        static void CreateThreadsThreadPool(int count, Semaphore smp)
-        {
-            if (count != 0)
-            {
-                smp.WaitOne();
-                ThreadPool.QueueUserWorkItem(state => DecrementState((int)state), count);
-                smp.Release();
-                CreateThreadsThreadPool(count - 1, smp);
-            }
         }
 
         private static void DecrementState(object count)

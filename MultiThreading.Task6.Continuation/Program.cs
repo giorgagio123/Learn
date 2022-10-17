@@ -28,32 +28,32 @@ namespace MultiThreading.Task6.Continuation
             var cts = new CancellationTokenSource();
             var token = cts.Token;
 
-            var continuationAexception = Task.Factory.StartNew(() => DoSomethingWithException("Continuation A"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
+            var continuationAexception = Task.Factory.StartNew(() => DoSomethingAndThrowException("Continuation A"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
             {
                 Console.WriteLine("Failed parent task but still executed continuationA");
             });
 
-            var continuationA = Task.Factory.StartNew(() => DoSomethingWithoutException("Continuation A"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
+            var continuationA = Task.Factory.StartNew(() => DoSomething("Continuation A"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
             {
                 Console.WriteLine("Succeed parent task but still executed continuationA");
             });
 
-            var continuationBexception = Task.Factory.StartNew(() => DoSomethingWithException("Continuation B"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
+            var continuationBexception = Task.Factory.StartNew(() => DoSomethingAndThrowException("Continuation B"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
             {
                 Console.WriteLine("Failed parent task but still executed continuationB");
             }, TaskContinuationOptions.OnlyOnFaulted);
 
-            var continuationB = Task.Factory.StartNew(() => DoSomethingWithoutException("Continuation B"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
+            var continuationB = Task.Factory.StartNew(() => DoSomething("Continuation B"), TaskCreationOptions.AttachedToParent).ContinueWith((t) =>
             {
                 Console.WriteLine("Succeed parent task but still executed continuationB");
             }, TaskContinuationOptions.OnlyOnFaulted);
 
-            var continuationC = Task.Factory.StartNew(() => DoSomethingWithException("Continuation C")).ContinueWith((t) =>
+            var continuationC = Task.Factory.StartNew(() => DoSomethingAndThrowException("Continuation C")).ContinueWith((t) =>
             {
                 Console.WriteLine($"Failed parent task but still executed continuationC. ThreadId - {Thread.CurrentThread.ManagedThreadId}");
             }, (TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously));
 
-            var continuationD = Task.Factory.StartNew(() => DoSomethingWithoutException("Continuation D"), token).ContinueWith((t) =>
+            var continuationD = Task.Factory.StartNew(() => DoSomethingAndThrowException("Continuation D"), token).ContinueWith((t) =>
             {
                 Console.WriteLine($"Running Continuation D. ThreadId - {Thread.CurrentThread.ManagedThreadId}");
             }, TaskContinuationOptions.OnlyOnCanceled);
@@ -64,13 +64,13 @@ namespace MultiThreading.Task6.Continuation
             Console.ReadLine();
         }
 
-        static Task DoSomethingWithException(string option)
+        static Task DoSomethingAndThrowException(string option)
         {
             Console.WriteLine($"Task Option - {option}. With Exception. ThreadId - {Thread.CurrentThread.ManagedThreadId}");
             throw new Exception();
         }
 
-        static Task DoSomethingWithoutException(string option)
+        static Task DoSomething(string option)
         {
             Console.WriteLine($"Task Option - {option}. Without Exception. ThreadId - {Thread.CurrentThread.ManagedThreadId}");
 

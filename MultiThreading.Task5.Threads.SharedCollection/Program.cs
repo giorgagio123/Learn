@@ -39,10 +39,8 @@ namespace MultiThreading.Task5.Threads.SharedCollection
                 Console.WriteLine();
 
                 var print = Task.Factory.StartNew(() => {
-                    foreach (var item in elements)
-                    {
-                        Console.Write(item);
-                    }
+                    var joinedElements = string.Join(", ", elements);
+                    Console.WriteLine($"[{joinedElements}]");  
                 });
 
                 print.Wait();

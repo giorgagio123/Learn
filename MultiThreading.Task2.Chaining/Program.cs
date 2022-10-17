@@ -5,6 +5,7 @@
  * Third Task – sorts this array by ascending.
  * Fourth Task – calculates the average value. All this tasks should print the values to console.
  */
+using MultiThreading.Task2.Chaining.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,7 +16,8 @@ namespace MultiThreading.Task2.Chaining
 {
     class Program
     {
-        const int RandomIntegerInterval = 9;
+        private static readonly IContinuationService _continuationService = new ContinuationService();
+        private static readonly IOutPutService _outPutService = new OutPutService();
 
         static void Main(string[] args)
         {
@@ -28,11 +30,10 @@ namespace MultiThreading.Task2.Chaining
             Console.WriteLine();
 
             // feel free to add your code
-
             var task1 = GetRandomIntegers();
-            var task2 = task1.ContinueWith(t => MultiplyWithRandomInteger(t.Result));
-            var task3 = task2.ContinueWith(t => SortByAsc(t.Result.Result));
-            var task4 = task3.ContinueWith(t => GetAvarage(t.Result.Result));
+            var task2 = task1.ContinueWith(t => _continuationService.MultiplyWithRandomIntegerContinuation(t.Result));
+            var task3 = task2.ContinueWith(t => _continuationService.SortByAscContinuation(t.Result.Result));
+            var task4 = task3.ContinueWith(t => _continuationService.GetAvarageContinuation(t.Result.Result));
 
             Console.ReadLine();
         }
@@ -45,44 +46,9 @@ namespace MultiThreading.Task2.Chaining
             for (int i = 0; i < 10; ++i)
                 values[i] = random.Next(9);
 
-            Output(values, "Task1");
+            _outPutService.Output(values, "Task1");
 
             return Task.FromResult(values);
-        }
-
-        static Task<int[]> MultiplyWithRandomInteger(int[] array) 
-        {
-            var random = new Random();
-            var multiplied = array.Select(x => x * random.Next(RandomIntegerInterval)).ToArray();
-            Output(multiplied, "Task2");
-
-            return Task.FromResult(multiplied);
-        }
-
-        static Task<int[]> SortByAsc(int[] array)
-        {
-            var ordered = array.OrderBy(o => o).ToArray();
-            Output(ordered, "Task3");
-
-            return Task.FromResult(ordered);
-        }
-
-        static Task<int[]> GetAvarage(int[] array)
-        {
-            var avg = new int[] { (int)array.Average() } ;
-
-            Output(avg , "Task4");
-
-            return Task.FromResult(avg);
-        }
-
-        static void Output(int[] arr, string taskName)
-        {
-            Console.WriteLine($"{taskName} Results:");
-            foreach (var item in arr)
-            {
-                Console.WriteLine(item.ToString());
-            }
         }
     }
 }
