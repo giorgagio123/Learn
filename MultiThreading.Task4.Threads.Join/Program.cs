@@ -28,7 +28,10 @@ namespace MultiThreading.Task4.Threads.Join
 
             Console.WriteLine();
             // feel free to add your code
+            var semaphoreObject = new Semaphore(initialCount: 1, maximumCount: 1, name: "CreateThreadsThreadPool");
             CreateThreads(10);
+            Console.WriteLine("ThreadPool");
+            CreateThreadsThreadPool(10, semaphoreObject);
             Console.ReadLine();
         }
 
@@ -38,11 +41,23 @@ namespace MultiThreading.Task4.Threads.Join
             {
                 var dec = new Thread(() => DecrementState(count));
                 dec.Start();
+                dec.Join();
                 CreateThreads(count -1);
             }
         }
 
-        private static void DecrementState(int count)
+        static void CreateThreadsThreadPool(int count, Semaphore smp)
+        {
+            if (count != 0)
+            {
+                smp.WaitOne();
+                ThreadPool.QueueUserWorkItem(state => DecrementState((int)state), count);
+                smp.Release();
+                CreateThreadsThreadPool(count - 1, smp);
+            }
+        }
+
+        private static void DecrementState(object count)
         {
             Console.WriteLine(count);
         }

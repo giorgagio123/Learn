@@ -15,7 +15,9 @@ namespace MultiThreading.Task2.Chaining
 {
     class Program
     {
-        static async Task Main(string[] args)
+        const int RandomIntegerInterval = 9;
+
+        static void Main(string[] args)
         {
             Console.WriteLine(".Net Mentoring Program. MultiThreading V1 ");
             Console.WriteLine("2.	Write a program, which creates a chain of four Tasks.");
@@ -26,36 +28,19 @@ namespace MultiThreading.Task2.Chaining
             Console.WriteLine();
 
             // feel free to add your code
-            Task<int[]> task1 = GetRandomInteger();
-            Task<int[]> task2 = await task1.ContinueWith(t =>
-            {
-                Random random = new Random();
-                int[] multiplied = t.Result.Select(x => x * random.Next(9)).ToArray();
-                Output(multiplied, "Task2");
 
-                return Task.FromResult(multiplied);
-            });
-            Task<int[]> task3 = await task2.ContinueWith(t => 
-            { 
-                var ordered = t.Result.OrderByDescending(o => o).ToArray();
-                Output(ordered, "Task3");
+            var task1 = GetRandomIntegers();
+            var task2 = task1.ContinueWith(t => MultiplyWithRandomInteger(t.Result));
+            var task3 = task2.ContinueWith(t => SortByAsc(t.Result.Result));
+            var task4 = task3.ContinueWith(t => GetAvarage(t.Result.Result));
 
-                return Task.FromResult(ordered);
-            });
-            Task<double> task4 = await task2.ContinueWith(t =>
-            {
-                var sum = t.Result.Sum();
-                var avg = ((double)sum) / t.Result.Length;
-                Output(new int[] { (int)avg }, "Task4");
-                return Task.FromResult(avg);
-            });
             Console.ReadLine();
         }
 
-        static Task<int[]> GetRandomInteger() 
+        static Task<int[]> GetRandomIntegers() 
         {
             Random random = new Random();
-            int[] values = new int[10];
+            var values = new int[10];
 
             for (int i = 0; i < 10; ++i)
                 values[i] = random.Next(9);
@@ -63,6 +48,32 @@ namespace MultiThreading.Task2.Chaining
             Output(values, "Task1");
 
             return Task.FromResult(values);
+        }
+
+        static Task<int[]> MultiplyWithRandomInteger(int[] array) 
+        {
+            var random = new Random();
+            var multiplied = array.Select(x => x * random.Next(RandomIntegerInterval)).ToArray();
+            Output(multiplied, "Task2");
+
+            return Task.FromResult(multiplied);
+        }
+
+        static Task<int[]> SortByAsc(int[] array)
+        {
+            var ordered = array.OrderBy(o => o).ToArray();
+            Output(ordered, "Task3");
+
+            return Task.FromResult(ordered);
+        }
+
+        static Task<int[]> GetAvarage(int[] array)
+        {
+            var avg = new int[] { (int)array.Average() } ;
+
+            Output(avg , "Task4");
+
+            return Task.FromResult(avg);
         }
 
         static void Output(int[] arr, string taskName)

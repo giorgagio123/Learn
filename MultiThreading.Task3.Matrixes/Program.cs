@@ -28,8 +28,8 @@ namespace MultiThreading.Task3.MatrixMultiplier
         {
             Console.WriteLine("Multiplying...");
 
-            var firstMatrix = new Matrix(sizeOfMatrix, sizeOfMatrix);
-            var secondMatrix = new Matrix(sizeOfMatrix, sizeOfMatrix);
+            var firstMatrix = new Matrix(sizeOfMatrix, sizeOfMatrix, true);
+            var secondMatrix = new Matrix(sizeOfMatrix, sizeOfMatrix, true);
 
             IMatrix resultMatrix = new MatricesMultiplier().Multiply(firstMatrix, secondMatrix);
 

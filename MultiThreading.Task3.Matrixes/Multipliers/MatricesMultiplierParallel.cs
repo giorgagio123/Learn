@@ -8,18 +8,16 @@ namespace MultiThreading.Task3.MatrixMultiplier.Multipliers
         public IMatrix Multiply(IMatrix m1, IMatrix m2)
         {
             var resultMatrix = new Matrix(m1.RowCount, m2.ColCount);
-            Parallel.For(0, (int)m1.RowCount, i =>
+            Parallel.For(0, m1.RowCount, i =>
             {
-                for (byte j = 0; j < m2.ColCount; j++)
-                {
+                Parallel.For(byte.MinValue, m2.ColCount, c => {
                     long sum = 0;
-                    for (byte k = 0; k < m1.ColCount; k++)
-                    {
-                        sum += m1.GetElement(i, k) * m2.GetElement(k, j);
-                    }
+                    Parallel.For(byte.MinValue, m1.ColCount, k => {
+                        sum += m1.GetElement(i, k) * m2.GetElement(k, c);
+                    });
 
-                    resultMatrix.SetElement(i, j, sum);
-                }
+                    resultMatrix.SetElement(i, c, sum);
+                });
             });
 
             return resultMatrix;

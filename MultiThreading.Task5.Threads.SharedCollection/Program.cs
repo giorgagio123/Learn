@@ -26,25 +26,28 @@ namespace MultiThreading.Task5.Threads.SharedCollection
             Console.WriteLine();
 
             // feel free to add your code
-
             Task.Factory.StartNew(() => AddElements(elements));
 
             Console.ReadLine();
         }
 
-        async static Task AddElements(List<int> elements)
+        static Task AddElements(List<int> elements)
         {
             for (int i = 0; i < 10; i++)
             {
                 elements.Add(i);
-                await Task.Factory.StartNew(() => {
+                Console.WriteLine();
+
+                var print = Task.Factory.StartNew(() => {
                     foreach (var item in elements)
                     {
                         Console.Write(item);
                     }
                 });
-                
+
+                print.Wait();
             }
+            return Task.CompletedTask;
         }
     }
 }

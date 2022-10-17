@@ -22,12 +22,10 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
             // todo: implement a test method to check the size of the matrix which makes parallel multiplication more effective than
             // todo: the regular one
             var sizeOfMatrix = 1;
-
-            
-            
-
-            long parallelMultiplierDuration = 1;
-            long regularMultiplierDuration = 2;
+            var parallelMultiplier = new MatricesMultiplierParallel();
+            var regularMultiplier = new MatricesMultiplier();
+            long regularMultiplierDuration;
+            long parallelMultiplierDuration;
 
             do
             {
@@ -37,19 +35,20 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
 
                 //code block
                 stopwatch.Start();
-                IMatrix regularMultiplier = new MatricesMultiplier().Multiply(firstMatrix, secondMatrix);
+                regularMultiplier.Multiply(firstMatrix, secondMatrix);
                 stopwatch.Stop();
                 regularMultiplierDuration = stopwatch.ElapsedMilliseconds;
 
                 stopwatch = new Stopwatch();
                 stopwatch.Start();
-                IMatrix parallelMultiplier = new MatricesMultiplierParallel().Multiply(firstMatrix, secondMatrix);
+                parallelMultiplier.Multiply(firstMatrix, secondMatrix);
                 stopwatch.Stop();
                 parallelMultiplierDuration = stopwatch.ElapsedMilliseconds;
 
                 sizeOfMatrix++;
             }
             while (regularMultiplierDuration < parallelMultiplierDuration);
+
             Console.WriteLine(sizeOfMatrix);
         }
 
